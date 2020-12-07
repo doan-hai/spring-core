@@ -46,9 +46,9 @@ public class CacheEndpoint {
             @RequestParam(required = false) String cacheName,
             @RequestParam(required = false) Object cacheKey) {
         if (cacheManager instanceof SimpleCacheManager) {
-            return ResponseUtils.success(getCaffeineCache(cacheName, cacheKey));
+            return ResponseUtils.success(getCaffeineCache(cacheName, cacheKey), false);
         }
-        return ResponseUtils.success(getRedisCache(cacheName, cacheKey));
+        return ResponseUtils.success(getRedisCache(cacheName, cacheKey), false);
     }
 
     @DeleteMapping("/cacheables")

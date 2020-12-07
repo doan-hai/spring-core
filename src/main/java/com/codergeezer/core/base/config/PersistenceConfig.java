@@ -33,7 +33,7 @@ public class PersistenceConfig {
         @Override
         public Optional<String> getCurrentAuditor() {
             try {
-                String username = SecurityContextHolder.getContext().getAuthentication().getName();
+                var username = SecurityContextHolder.getContext().getAuthentication().getName();
                 return username == null ? Optional.of("anonymous") : Optional.of(username);
             } catch (Exception e) {
                 return Optional.of("anonymous");

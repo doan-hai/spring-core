@@ -1,6 +1,6 @@
 package com.codergeezer.core.base.exception;
 
-import com.codergeezer.core.base.data.BaseObject;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -9,138 +9,44 @@ import org.springframework.http.HttpStatus;
  * @author haidv
  * @version 1.0
  */
+@Getter
 public class BaseException extends RuntimeException {
 
-    private final BaseObject[] messageArg;
+    private final Object[] messageArg;
 
-    private final Log log;
+    private final AbstractError abstractError;
 
-    private final int code;
+    private final Throwable cause;
 
-    private final String messageCode;
-
-    private final String defaultMessage;
-
-    private final HttpStatus httpStatus;
-
-    /**
-     * Constructs a new exception object with the specified error code.
-     *
-     * @param message the detail message.
-     */
-    public BaseException(String message) {
-        this(message, CommonErrorCode.INTERNAL_SERVER_ERROR);
+    public BaseException(AbstractError abstractError) {
+        this(null, abstractError, null);
     }
 
-    /**
-     * Constructs a new exception object with the specified error code.
-     *
-     * @param baseErrorCode {@link BaseErrorCode}
-     */
-    public BaseException(BaseErrorCode baseErrorCode) {
-        this(baseErrorCode.getMessageCode(), baseErrorCode);
+    public BaseException(AbstractError abstractError, Throwable cause) {
+        this(null, abstractError, cause);
     }
 
-    /**
-     * Constructs a new exception object with the specified error code.
-     *
-     * @param baseErrorCode {@link BaseErrorCode}
-     * @param message       the detail message.
-     */
-    public BaseException(String message, BaseErrorCode baseErrorCode) {
-        this(message, baseErrorCode, Log.SIMPLE_LOG);
-    }
-
-    /**
-     * Constructs a new exception object with the specified error code.
-     *
-     * @param baseErrorCode {@link BaseErrorCode}
-     * @param log           log
-     */
-    public BaseException(BaseErrorCode baseErrorCode, Log log) {
-        this(baseErrorCode.getMessageCode(), baseErrorCode, log);
-    }
-
-    /**
-     * Constructs a new exception object with the specified error code.
-     *
-     * @param baseErrorCode {@link BaseErrorCode}
-     * @param log           log
-     * @param message       the detail message.
-     */
-    public BaseException(String message, BaseErrorCode baseErrorCode, Log log) {
-        this(message, baseErrorCode, null, log);
-    }
-
-    /**
-     * Constructs a new exception object with the specified error code.
-     *
-     * @param baseErrorCode {@link BaseErrorCode}
-     * @param messageArg    an array of arguments
-     */
-    public BaseException(BaseErrorCode baseErrorCode, Object[] messageArg) {
-        this(baseErrorCode.getMessageCode(), baseErrorCode, messageArg, Log.SIMPLE_LOG);
-    }
-
-    /**
-     * Constructs a new exception object with the specified error code.
-     *
-     * @param baseErrorCode {@link BaseErrorCode}
-     * @param messageArg    an array of arguments
-     * @param message       the detail message.
-     */
-    public BaseException(String message, BaseErrorCode baseErrorCode, Object[] messageArg) {
-        this(message, baseErrorCode, messageArg, Log.SIMPLE_LOG);
-    }
-
-    /**
-     * Constructs a new exception object with the specified error code.
-     *
-     * @param baseErrorCode {@link BaseErrorCode}
-     * @param messageArg    an array of arguments
-     * @param log           log
-     * @param message       the detail message.
-     */
-    public BaseException(String message, BaseErrorCode baseErrorCode, Object[] messageArg, Log log) {
-        super(message);
-        this.messageArg = (BaseObject[]) messageArg;
-        this.log = log;
-        this.code = baseErrorCode.getCode();
-        this.httpStatus = baseErrorCode.getHttpStatus();
-        this.messageCode = baseErrorCode.getMessageCode();
-        if (baseErrorCode instanceof CommonErrorCode) {
-            this.defaultMessage = ((CommonErrorCode) baseErrorCode).getDefaultMessage();
-        } else {
-            this.defaultMessage = null;
-        }
-    }
-
-    public Object[] getMessageArg() {
-        return messageArg;
-    }
-
-    public Log getLog() {
-        return log;
+    public BaseException(Object[] messageArg, AbstractError abstractError, Throwable cause) {
+        super(abstractError.getMessage(), cause);
+        this.messageArg = messageArg;
+        this.abstractError = abstractError;
+        this.cause = cause;
     }
 
     public int getCode() {
-        return code;
+        return abstractError.getCode();
     }
 
-    public String getMessageCode() {
-        return messageCode;
+    public String getMessage() {
+        return messageArg == null ? abstractError.getMessage() : String.format(abstractError.getMessage(), messageArg);
+    }
+
+    public String getLocalizedMessage() {
+        return BaseException.class.getSimpleName() + "[" + abstractError.getCode() + "-" +
+               getMessage() + "-" + abstractError.getHttpStatus() + "]";
     }
 
     public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
-
-    public String getDefaultMessage() {
-        return defaultMessage;
-    }
-
-    public enum Log {
-        FULL_LOG,
-        SIMPLE_LOG
+        return abstractError.getHttpStatus();
     }
 }

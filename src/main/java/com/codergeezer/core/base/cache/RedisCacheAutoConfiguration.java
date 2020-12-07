@@ -1,6 +1,5 @@
 package com.codergeezer.core.base.cache;
 
-import com.google.common.cache.CacheBuilder;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -44,7 +43,7 @@ public class RedisCacheAutoConfiguration extends CachingConfigurerSupport {
     @ConditionalOnMissingBean
     public CacheManager redisCacheManager(RedisConnectionFactory connectionFactory, CacheProperties cacheProperties) {
         Map<String, RedisCacheConfiguration> configurationMap = new HashMap<>();
-        Map<String, CacheBuilder> properties = cacheProperties.getProperties();
+        var properties = cacheProperties.getProperties();
         properties.forEach((k, v) -> configurationMap.put(v.getCacheName(),
                                                           buildRedisCacheConfiguration(v.getExpiredTime())));
         return RedisCacheManager

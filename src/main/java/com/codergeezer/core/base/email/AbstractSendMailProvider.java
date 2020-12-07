@@ -9,7 +9,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.util.CollectionUtils;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -21,8 +20,8 @@ import java.util.Map;
 public abstract class AbstractSendMailProvider {
 
     public void sendMail(Email email, JavaMailSender javaMailSender) throws MessagingException {
-        final MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
+        final var mimeMessage = javaMailSender.createMimeMessage();
+        final var message = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
         message.setSubject(email.getSubject());
         message.setFrom(email.getFrom());
         message.setTo(email.getTo().toArray(new String[0]));
@@ -43,8 +42,8 @@ public abstract class AbstractSendMailProvider {
         }
         if (email.isHtml() && email.isInline() && !CollectionUtils.isEmpty(email.getInlineResource())) {
             for (Map.Entry<String, String> entry : email.getInlineResource().entrySet()) {
-                String k = entry.getKey();
-                String v = entry.getValue();
+                var k = entry.getKey();
+                var v = entry.getValue();
                 FileSystemResource res = new FileSystemResource(new File(v));
                 message.addInline(k, res);
             }

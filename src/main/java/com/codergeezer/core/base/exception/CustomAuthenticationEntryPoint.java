@@ -1,6 +1,5 @@
 package com.codergeezer.core.base.exception;
 
-import com.codergeezer.core.base.config.MessageProvider;
 import com.codergeezer.core.base.logging.LoggingProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,17 +29,13 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationEntryPoint.class);
 
-    private final MessageProvider messageProvider;
-
     private final LoggingProperties loggingProperties;
 
     @Value("${spring.application.name}")
     private String serviceName;
 
     @Autowired
-    public CustomAuthenticationEntryPoint(MessageProvider messageProvider,
-                                          LoggingProperties loggingProperties) {
-        this.messageProvider = messageProvider;
+    public CustomAuthenticationEntryPoint(LoggingProperties loggingProperties) {
         this.loggingProperties = loggingProperties;
     }
 
@@ -49,16 +44,11 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
                          AuthenticationException authException) throws IOException {
         logRequest(request, serviceName, loggingProperties);
         LOGGER.warn("You need to login first in order to perform this action.");
-        CommonErrorCode errorCode = FORBIDDEN;
-        String message;
+        var errorCode = FORBIDDEN;
         response.setStatus(errorCode.getHttpStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        try {
-            message = messageProvider.getMessage(errorCode.getMessageCode());
-        } catch (Exception ex) {
-            message = errorCode.getDefaultMessage();
-        }
-        response.getWriter().print(toJson(getResponseDataError(errorCode.getCode(), message, null)));
+        response.getWriter()
+                .print(toJson(getResponseDataError(errorCode.getCode(), errorCode.getMessage(), null, false)));
         logResponse(request, response, loggingProperties);
     }
 }

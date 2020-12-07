@@ -2,7 +2,6 @@ package com.codergeezer.core.base.cache;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Ticker;
-import com.google.common.cache.CacheBuilder;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -21,7 +20,7 @@ import java.util.List;
  * @version 1.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(name = "core.cache.type", havingValue = "MEMORY")
+@ConditionalOnProperty(name = "core.cache.type", havingValue = "caffeine")
 @Import(CacheAutoConfiguration.class)
 public class MemoryCacheAutoConfiguration {
 
@@ -32,7 +31,7 @@ public class MemoryCacheAutoConfiguration {
 
     @Bean("memory-cache-manager")
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "core.cache.type", havingValue = "MEMORY")
+    @ConditionalOnProperty(name = "core.cache.type", havingValue = "caffeine")
     public CacheManager cacheManager(final Ticker ticker, final CacheProperties cacheProperties) {
         final List<CaffeineCache> caches = new ArrayList<>();
         cacheProperties.getProperties().forEach((k, v) -> {

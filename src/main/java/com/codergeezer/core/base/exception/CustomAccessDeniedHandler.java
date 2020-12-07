@@ -1,6 +1,5 @@
 package com.codergeezer.core.base.exception;
 
-import com.codergeezer.core.base.config.MessageProvider;
 import com.codergeezer.core.base.logging.LoggingProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
@@ -32,17 +30,13 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AccessDeniedHandler.class);
 
-    private final MessageProvider messageProvider;
-
     private final LoggingProperties loggingProperties;
 
     @Value("${spring.application.name}")
     private String serviceName;
 
     @Autowired
-    public CustomAccessDeniedHandler(MessageProvider messageProvider,
-                                     LoggingProperties loggingProperties) {
-        this.messageProvider = messageProvider;
+    public CustomAccessDeniedHandler(LoggingProperties loggingProperties) {
         this.loggingProperties = loggingProperties;
     }
 
@@ -50,21 +44,16 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exc)
             throws IOException {
         logRequest(request, serviceName, loggingProperties);
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
             LOGGER.warn(String.format("User: %s attempted to access the protected URL: %s", auth.getName(),
                                       request.getRequestURI()));
         }
-        CommonErrorCode errorCode = FORBIDDEN;
+        var errorCode = FORBIDDEN;
         response.setStatus(errorCode.getHttpStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        String message;
-        try {
-            message = messageProvider.getMessage(errorCode.getMessageCode());
-        } catch (Exception ex) {
-            message = errorCode.getDefaultMessage();
-        }
-        response.getWriter().write(toJson(getResponseDataError(errorCode.getCode(), message, null)));
+        response.getWriter()
+                .write(toJson(getResponseDataError(errorCode.getCode(), errorCode.getMessage(), null, false)));
         logResponse(request, response, loggingProperties);
     }
 }

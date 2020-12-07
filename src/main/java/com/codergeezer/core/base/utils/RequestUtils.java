@@ -1,5 +1,6 @@
 package com.codergeezer.core.base.utils;
 
+import com.codergeezer.core.base.constant.RequestConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.Logger;
@@ -12,10 +13,7 @@ import org.springframework.web.method.HandlerMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.Set;
-
-import static com.codergeezer.core.base.constant.RequestConstant.*;
 
 /**
  * @author haidv
@@ -34,11 +32,11 @@ public class RequestUtils {
     }
 
     public static String extractOs(HttpServletRequest request) {
-        String os = StringUtils.EMPTY;
+        var os = StringUtils.EMPTY;
         if (request == null) {
             return os;
         }
-        String userAgent = request.getHeader("User-Agent");
+        var userAgent = request.getHeader("User-Agent");
         if (userAgent.toLowerCase().contains("windows")) {
             os = "Windows";
         } else if (userAgent.toLowerCase().contains("mac")) {
@@ -56,13 +54,13 @@ public class RequestUtils {
     }
 
     public static String extractBrowser(HttpServletRequest request) {
-        String browser = StringUtils.EMPTY;
+        var browser = StringUtils.EMPTY;
         if (request == null) {
             return browser;
         }
-        String userAgent = request.getHeader("User-Agent").toLowerCase();
+        var userAgent = request.getHeader("User-Agent").toLowerCase();
         if (userAgent.contains("msie")) {
-            String substring = userAgent.substring(userAgent.indexOf("msie")).split(";")[0];
+            var substring = userAgent.substring(userAgent.indexOf("msie")).split(";")[0];
             browser = substring.split(StringUtils.SPACE)[0].replace("msie", "IE") + "-" +
                       substring.split(StringUtils.SPACE)[1];
         } else if (userAgent.contains("safari") && userAgent.contains(VERSION)) {
@@ -96,8 +94,8 @@ public class RequestUtils {
     }
 
     public static String extractClientIpAddress(HttpServletRequest request) {
-        for (String header : HEADERS_TO_TRY) {
-            String ip = request.getHeader(header);
+        for (String header : RequestConstant.HEADERS_TO_TRY) {
+            var ip = request.getHeader(header);
             if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
                 return ip;
             }
@@ -123,8 +121,8 @@ public class RequestUtils {
 
     public static boolean existedRequestBody(Object o) {
         try {
-            Method method = ((HandlerMethod) o).getMethod();
-            Annotation[][] annotations = method.getParameterAnnotations();
+            var method = ((HandlerMethod) o).getMethod();
+            var annotations = method.getParameterAnnotations();
             for (Annotation[] annotation : annotations) {
                 for (Annotation tmp : annotation) {
                     if (tmp instanceof RequestBody) {
@@ -139,17 +137,17 @@ public class RequestUtils {
     }
 
     public static String extractAuthentication(HttpServletRequest servletRequest) {
-        return servletRequest.getHeader(AUTHORIZATION);
+        return servletRequest.getHeader(RequestConstant.AUTHORIZATION);
     }
 
     public static String extractToken(HttpServletRequest servletRequest) {
-        String auth = extractAuthentication(servletRequest);
+        var auth = extractAuthentication(servletRequest);
         if (auth != null) {
-            if (auth.startsWith(BEARER_PREFIX)) {
-                return auth.replace(BEARER_PREFIX, StringUtils.EMPTY);
+            if (auth.startsWith(RequestConstant.BEARER_PREFIX)) {
+                return auth.replace(RequestConstant.BEARER_PREFIX, StringUtils.EMPTY);
             }
-            if (auth.startsWith(BASIC_PREFIX)) {
-                return auth.replace(BASIC_PREFIX, StringUtils.EMPTY);
+            if (auth.startsWith(RequestConstant.BASIC_PREFIX)) {
+                return auth.replace(RequestConstant.BASIC_PREFIX, StringUtils.EMPTY);
             }
             return auth;
         }
@@ -157,10 +155,10 @@ public class RequestUtils {
     }
 
     public static String extractRequestId() {
-        return ThreadContext.get(REQUEST_ID);
+        return ThreadContext.get(RequestConstant.REQUEST_ID);
     }
 
     public static String extractServiceName() {
-        return ThreadContext.get(SERVICE_NAME);
+        return ThreadContext.get(RequestConstant.SERVICE_NAME);
     }
 }

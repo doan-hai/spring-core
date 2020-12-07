@@ -1,6 +1,5 @@
 package com.codergeezer.core.base.cache;
 
-import com.google.common.cache.CacheBuilder;
 import org.springframework.boot.autoconfigure.cache.CacheType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
  * @author haidv
  * @version 1.0
  */
-public interface BaseErrorCode {
+public interface AbstractError {
 
-    String getMessageCode();
+    String getMessage();
 
     int getCode();
 

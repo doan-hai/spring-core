@@ -1,9 +1,13 @@
 package com.codergeezer.core.base.swagger;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * @author haidv
  * @version 1.0
  */
+@Setter @Getter
 public class TokenInfo {
 
     private String name;
@@ -11,28 +15,4 @@ public class TokenInfo {
     private String keyName;
 
     private String passAs;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getKeyName() {
-        return keyName;
-    }
-
-    public void setKeyName(String keyName) {
-        this.keyName = keyName;
-    }
-
-    public String getPassAs() {
-        return passAs;
-    }
-
-    public void setPassAs(String passAs) {
-        this.passAs = passAs;
-    }
 }

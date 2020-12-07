@@ -1,5 +1,6 @@
 package com.codergeezer.core.base.data;
 
+import lombok.Getter;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
  * @author haidv
  * @version 1.0
  */
+@Getter
 public class ResponsePage<T> {
 
     private final int pageNo;
@@ -36,25 +38,4 @@ public class ResponsePage<T> {
     public ResponsePage(Page page, List<T> data) {
         this(page.getNumber() + 1, page.getSize(), page.getTotalElements(), page.getTotalPages(), data);
     }
-
-    public int getPageNo() {
-        return this.pageNo;
-    }
-
-    public int getPageSize() {
-        return this.pageSize;
-    }
-
-    public long getTotalCount() {
-        return this.totalCount;
-    }
-
-    public int getTotalPage() {
-        return this.totalPage;
-    }
-
-    public List<T> getData() {
-        return this.data;
-    }
-
 }

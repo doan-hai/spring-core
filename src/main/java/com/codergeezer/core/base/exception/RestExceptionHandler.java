@@ -1,10 +1,11 @@
 package com.codergeezer.core.base.exception;
 
-import com.codergeezer.core.base.config.MessageProvider;
 import com.codergeezer.core.base.data.ResponseData;
+import com.codergeezer.core.base.data.ResponseUtils;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -32,7 +33,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.codergeezer.core.base.data.ResponseUtils.error;
 import static com.codergeezer.core.base.exception.CommonErrorCode.*;
 
 /**
@@ -50,13 +50,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RestExceptionHandler.class);
 
-    private final MessageProvider messageProvider;
-
-    @Autowired
-    public RestExceptionHandler(MessageProvider messageProvider) {
-        this.messageProvider = messageProvider;
-    }
-
     /**
      * Customize the response for MissingServletRequestParameterException. Triggered when a 'required' request parameter
      * is missing.
@@ -73,7 +66,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                        HttpHeaders headers, HttpStatus status,
                                                                        WebRequest request) {
         LOGGER.error(ex.getMessage());
-        return this.handleError(MISSING_REQUEST_PARAMETER, new Object[]{ex.getParameterName(), ex.getParameterType()});
+        return this.handleError(MISSING_REQUEST_PARAMETER);
     }
 
     /**
@@ -264,28 +257,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BaseException.class)
     protected ResponseEntity<ResponseData<Object>> handleBaseException(BaseException ex) {
         List<SubError> subErrors = null;
-        String message;
-        boolean isFullTrace = ex.getLog().equals(BaseException.Log.FULL_LOG);
-        if (isFullTrace) {
-            LOGGER.error(ex.getMessage(), ex);
-        } else {
-            LOGGER.error(ex.getMessage());
-        }
+        LOGGER.error(ex.getLocalizedMessage(), ex);
         int code = ex.getCode();
         HttpStatus httpStatus = ex.getHttpStatus();
-        try {
-            message = messageProvider.getMessage(ex.getMessageCode(), ex.getMessageArg());
-        } catch (Exception e1) {
-            message = ex.getDefaultMessage();
-            if (message != null) {
-                if (ex.getMessageArg() != null) {
-                    message = String.format(message, ex.getMessageArg());
-                }
-            } else {
-                message = "Has error: " + ex.getMessageCode();
-            }
-        }
-        return error(code, message, subErrors, httpStatus);
+        return ResponseUtils.error(code, ex.getMessage(), subErrors, httpStatus, false);
     }
 
     /**
@@ -326,18 +301,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @SuppressWarnings("rawtypes")
     private ResponseEntity handleError(CommonErrorCode commonError, Object[] messageArg, List<SubError> subErrors) {
-        String message;
+        String message = commonError.getMessage();
         int code = commonError.getCode();
-        try {
-            message = messageProvider.getMessage(commonError.getMessageCode(), messageArg);
-        } catch (Exception e1) {
-            message = commonError.getDefaultMessage();
-            if (messageArg != null) {
-                message = String.format(message, messageArg);
-            }
+        if (messageArg != null) {
+            message = String.format(message, messageArg);
         }
         HttpStatus httpStatus = commonError.getHttpStatus();
-        return error(code, message, subErrors, httpStatus);
+        return ResponseUtils.error(code, message, subErrors, httpStatus, false);
     }
 
     private List<SubError> getSubErrors(MethodArgumentNotValidException e) {
@@ -356,6 +326,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      * @author haidv
      * @version 1.0
      */
+    @Getter
+    @RequiredArgsConstructor
     public static class SubError {
 
         private final String fieldName;
@@ -363,26 +335,5 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         private final Object fieldValue;
 
         private final String message;
-
-        public SubError(String fieldName, Object fieldValue, String message) {
-            this.fieldName = fieldName;
-            this.fieldValue = fieldValue;
-            this.message = message;
-        }
-
-        @SuppressWarnings("unused")
-        public String getFieldName() {
-            return this.fieldName;
-        }
-
-        @SuppressWarnings("unused")
-        public Object getFieldValue() {
-            return this.fieldValue;
-        }
-
-        @SuppressWarnings("unused")
-        public String getMessage() {
-            return this.message;
-        }
     }
 }

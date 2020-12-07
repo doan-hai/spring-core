@@ -1,5 +1,6 @@
 package com.codergeezer.core.base.event;
 
+import com.codergeezer.core.base.constant.RequestConstant;
 import com.codergeezer.core.base.exception.BaseException;
 import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.Logger;
@@ -9,8 +10,6 @@ import org.springframework.core.task.TaskExecutor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import static com.codergeezer.core.base.constant.RequestConstant.REQUEST_ID;
 
 /**
  * @author haidv
@@ -32,7 +31,7 @@ public abstract class DrivenEventListener {
     public void handleEvent(EventInfo eventInfo) {
         if (!eventInfo.isSync()) {
             handleEventExecutor().execute(() -> {
-                ThreadContext.put(REQUEST_ID, eventInfo.getId());
+                ThreadContext.put(RequestConstant.REQUEST_ID, eventInfo.getId());
                 processLogHandleEventAsync(eventInfo);
                 routerEventHandle(eventInfo);
                 ThreadContext.clearAll();
@@ -43,14 +42,14 @@ public abstract class DrivenEventListener {
     }
 
     private void routerEventHandle(EventInfo eventInfo) {
-        CoreEvent event = eventInfo.getEvent();
+        var event = eventInfo.getEvent();
         if (event == null) {
             LOGGER.warn("The event to be handled was not found");
             return;
         }
         LOGGER.info(String.format("Start handle event: %s id: %s", event.getEventName(), eventInfo.getId()));
-        String handleEventClassName = event.getHandleEventClassName();
-        String handleEventFunctionName = event.getHandleEventFunctionName();
+        var handleEventClassName = event.getHandleEventClassName();
+        var handleEventFunctionName = event.getHandleEventFunctionName();
         try {
             Method m;
             Object obj;
@@ -74,7 +73,7 @@ public abstract class DrivenEventListener {
     }
 
     private void invokeHandleMethod(int index, int totalNumberExec, Method m, Object obj, EventInfo eventInfo) {
-        CoreEvent event = eventInfo.getEvent();
+        var event = eventInfo.getEvent();
         if (index >= totalNumberExec && !eventInfo.isSync()) {
             processHandleErrorEventAsync(eventInfo);
             return;

@@ -1,4 +1,4 @@
-package com.codergeezer.core.oauth2;
+package com.codergeezer.core.base.securiryRequest;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
  * @version 1.0
  */
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(OAuth2Properties.class)
-public class ResourceServerAutoConfig {
+@EnableConfigurationProperties(SecurityRequestProperties.class)
+public class SecurityRequestAutoConfig {
 
 }

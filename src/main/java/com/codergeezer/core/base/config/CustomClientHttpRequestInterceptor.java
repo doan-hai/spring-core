@@ -29,7 +29,7 @@ public class CustomClientHttpRequestInterceptor implements ClientHttpRequestInte
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
             throws IOException {
         traceRequest(request, body);
-        ClientHttpResponse response = execution.execute(request, body);
+        var response = execution.execute(request, body);
         traceResponse(response, request);
         return response;
     }

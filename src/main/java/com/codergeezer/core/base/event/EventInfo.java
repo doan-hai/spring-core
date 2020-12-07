@@ -1,11 +1,15 @@
 package com.codergeezer.core.base.event;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.UUID;
 
 /**
  * @author haidv
  * @version 1.0
  */
+@Getter @RequiredArgsConstructor
 public class EventInfo {
 
     public static final int DEFAULT_RETRY_EVENT = 3;
@@ -33,34 +37,6 @@ public class EventInfo {
     }
 
     public EventInfo(Object what, boolean isSync, CoreEvent event, int retry) {
-        this(UUID.randomUUID().toString(), what, isSync, event, retry);
-    }
-
-    public EventInfo(String id, Object what, boolean isSync, CoreEvent event, int retry) {
-        this.id = id;
-        this.what = what;
-        this.event = event;
-        this.isSync = isSync;
-        this.retry = retry;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public Object getWhat() {
-        return what;
-    }
-
-    public CoreEvent getEvent() {
-        return event;
-    }
-
-    public boolean isSync() {
-        return isSync;
-    }
-
-    public int getRetry() {
-        return retry;
+        this(UUID.randomUUID().toString(), what, event, isSync, retry);
     }
 }

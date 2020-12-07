@@ -37,7 +37,7 @@ public class SwaggerAutoConfiguration {
     @ConditionalOnProperty("core.swagger.enabled")
     @ConditionalOnMissingBean
     public Docket createDocket(final SwaggerProperties properties) {
-        Docket docket = new Docket(DocumentationType.SWAGGER_2)
+        var docket = new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(buildApiInfo(properties));
         if (!CollectionUtils.isEmpty(properties.getGlobalOperationParameters())) {
             docket.globalOperationParameters(buildGlobalParameters(properties.getGlobalOperationParameters()));
@@ -92,7 +92,7 @@ public class SwaggerAutoConfiguration {
     private List<OAuth> securitySchema(final String authOauth2AccessTokenUri) {
         final List<AuthorizationScope> authorizationScopeList = new ArrayList<>();
         final List<GrantType> grantTypes = new ArrayList<>();
-        final GrantType clientCredentialsGrant = new ClientCredentialsGrant(authOauth2AccessTokenUri);
+        final var clientCredentialsGrant = new ClientCredentialsGrant(authOauth2AccessTokenUri);
         grantTypes.add(clientCredentialsGrant);
         return Collections.singletonList(new OAuth("oauth2", authorizationScopeList, grantTypes));
     }
@@ -104,7 +104,7 @@ public class SwaggerAutoConfiguration {
                                                  .description(globalOperationParameter.getDescription())
                                                  .modelRef(new ModelRef(globalOperationParameter.getModelRef()))
                                                  .parameterType(globalOperationParameter.getParameterType())
-                                                 .required(globalOperationParameter.getRequired())
+                                                 .required(globalOperationParameter.isRequired())
                                                  .build());
         }
         return parameters;

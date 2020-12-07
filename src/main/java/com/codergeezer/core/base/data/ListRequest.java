@@ -2,6 +2,8 @@ package com.codergeezer.core.base.data;
 
 import com.codergeezer.core.base.annotations.ConditionString;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -9,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import javax.validation.constraints.Pattern;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -22,6 +23,7 @@ import static javax.validation.constraints.Pattern.Flag.CASE_INSENSITIVE;
  * @author haidv
  * @version 1.0
  */
+@Setter @Getter
 public class ListRequest {
 
     private final Logger logger = LoggerFactory.getLogger(ListRequest.class);
@@ -41,30 +43,6 @@ public class ListRequest {
         this.pageNo = (pageNo == null || pageNo <= 0) ? 1 : pageNo;
         this.sort = sort;
         this.condition = condition;
-    }
-
-    public Integer getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(Integer pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public Integer getPageNo() {
-        return pageNo;
-    }
-
-    public void setPageNo(Integer pageNo) {
-        this.pageNo = pageNo;
-    }
-
-    public String getSort() {
-        return sort;
-    }
-
-    public void setSort(String sort) {
-        this.sort = sort;
     }
 
     public Pageable pageable() {

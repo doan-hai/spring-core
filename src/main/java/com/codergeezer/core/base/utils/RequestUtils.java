@@ -1,6 +1,5 @@
 package com.codergeezer.core.base.utils;
 
-import com.codergeezer.core.base.constant.RequestConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.Logger;
@@ -15,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Set;
+
+import static com.codergeezer.core.base.constant.RequestConstant.*;
 
 /**
  * @author haidv
@@ -94,6 +95,16 @@ public class RequestUtils {
         return browser;
     }
 
+    public static String extractClientIpAddress(HttpServletRequest request) {
+        for (String header : HEADERS_TO_TRY) {
+            String ip = request.getHeader(header);
+            if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
+                return ip;
+            }
+        }
+        return request.getRemoteAddr();
+    }
+
     public static boolean matches(HttpServletRequest request, Set<String> excludePatterns) {
         return matches(request.getRequestURI(), excludePatterns);
     }
@@ -128,17 +139,17 @@ public class RequestUtils {
     }
 
     public static String extractAuthentication(HttpServletRequest servletRequest) {
-        return servletRequest.getHeader(RequestConstant.AUTHORIZATION);
+        return servletRequest.getHeader(AUTHORIZATION);
     }
 
     public static String extractToken(HttpServletRequest servletRequest) {
         String auth = extractAuthentication(servletRequest);
         if (auth != null) {
-            if (auth.startsWith(RequestConstant.BEARER_PREFIX)) {
-                return auth.replace(RequestConstant.BEARER_PREFIX, StringUtils.EMPTY);
+            if (auth.startsWith(BEARER_PREFIX)) {
+                return auth.replace(BEARER_PREFIX, StringUtils.EMPTY);
             }
-            if (auth.startsWith(RequestConstant.BASIC_PREFIX)) {
-                return auth.replace(RequestConstant.BASIC_PREFIX, StringUtils.EMPTY);
+            if (auth.startsWith(BASIC_PREFIX)) {
+                return auth.replace(BASIC_PREFIX, StringUtils.EMPTY);
             }
             return auth;
         }
@@ -146,10 +157,10 @@ public class RequestUtils {
     }
 
     public static String extractRequestId() {
-        return ThreadContext.get(RequestConstant.REQUEST_ID);
+        return ThreadContext.get(REQUEST_ID);
     }
 
     public static String extractServiceName() {
-        return ThreadContext.get(RequestConstant.SERVICE_NAME);
+        return ThreadContext.get(SERVICE_NAME);
     }
 }

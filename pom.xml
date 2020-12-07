@@ -25,6 +25,7 @@
         <commons-collections.version>3.2.2</commons-collections.version>
         <spring-cloud-security.version>2.2.4.RELEASE</spring-cloud-security.version>
         <commons-text.version>1.9</commons-text.version>
+        <javax.validation.version>2.0.1.Final</javax.validation.version>
     </properties>
 
     <dependencies>
@@ -178,6 +179,12 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>${io.springfox.version}</version>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${javax.validation.version}</version>
         </dependency>
 
     </dependencies>

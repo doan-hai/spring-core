@@ -21,7 +21,7 @@ public abstract class BaseService {
     /**
      * Common logger for use in subclasses.
      */
-    protected static final Logger LOGGER = LoggerFactory.getLogger(BaseService.class);
+    protected final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     protected Authentication getCurrentAuthentication() {
         return SecurityContextHolder.getContext().getAuthentication();

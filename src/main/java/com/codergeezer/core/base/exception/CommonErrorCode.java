@@ -63,7 +63,11 @@ public enum CommonErrorCode implements BaseErrorCode {
     REFRESH_TOKEN_EXPIRED(17,
                           "refresh.token.expired",
                           "The refresh token expired, requires login again!",
-                          HttpStatus.UNAUTHORIZED);
+                          HttpStatus.UNAUTHORIZED),
+    EXECUTE_THIRTY_SERVICE_ERROR(18,
+                                 "execute.thirty.service.error",
+                                 "An error occurred while executing the 3rd party api!",
+                                 HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final int code;
 

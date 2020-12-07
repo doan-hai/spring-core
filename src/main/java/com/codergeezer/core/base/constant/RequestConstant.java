@@ -23,13 +23,35 @@ public class RequestConstant {
 
     public static final String BASIC_PREFIX = "Basic ";
 
-    private static final List<String> WHITE_LIST_REQUEST = Arrays.asList("/swagger-ui.html/**", "/swagger-resources/**",
-                                                                         "/webjars/**", "/swagger-ui.html#!/**",
-                                                                         "/v2/api-docs", "/actuator/**", "/css/**",
-                                                                         "/js/**", "/**/*.png", "/**/*.gif",
-                                                                         "/**/*.svg", "/**/*.jpg", "/**/*.html",
-                                                                         "/**/*.css", "/**/*.js", "/favicon.ico", "/",
-                                                                         "/error", "/csrf");
+    public static final String JWT_CLAIM_OS = "os";
+
+    public static final String JWT_CLAIM_CLIENT_IP = "ip";
+
+    public static final String JWT_CLAIM_BROWSER = "br";
+
+    public static final String DEVICE_ID = "X-Device-ID";
+
+    public static final String DEVICE_TOKEN = "X-Device-Token";
+
+    public static final List<String> WHITE_LIST_REQUEST = Arrays.asList("/swagger-ui.html/**", "/swagger-resources/**",
+                                                                        "/webjars/**", "/swagger-ui.html#!/**",
+                                                                        "/v2/api-docs", "/actuator/**", "/css/**",
+                                                                        "/js/**", "/**/*.png", "/**/*.gif",
+                                                                        "/**/*.svg", "/**/*.jpg", "/**/*.html",
+                                                                        "/**/*.css", "/**/*.js", "/favicon.ico", "/",
+                                                                        "/error", "/csrf");
+
+    public static final String[] HEADERS_TO_TRY = {"X-Forwarded-For",
+                                                   "Proxy-Client-IP",
+                                                   "WL-Proxy-Client-IP",
+                                                   "HTTP_X_FORWARDED_FOR",
+                                                   "HTTP_X_FORWARDED",
+                                                   "HTTP_X_CLUSTER_CLIENT_IP",
+                                                   "HTTP_CLIENT_IP",
+                                                   "HTTP_FORWARDED_FOR",
+                                                   "HTTP_FORWARDED",
+                                                   "HTTP_VIA",
+                                                   "REMOTE_ADDR"};
 
     private RequestConstant() {
         throw new IllegalStateException("Utility class");

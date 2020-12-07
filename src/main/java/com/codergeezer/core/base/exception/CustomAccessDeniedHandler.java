@@ -1,7 +1,7 @@
 package com.codergeezer.core.base.exception;
 
 import com.codergeezer.core.base.config.MessageProvider;
-import com.codergeezer.core.logging.LoggingProperties;
+import com.codergeezer.core.base.logging.LoggingProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +19,9 @@ import java.io.IOException;
 
 import static com.codergeezer.core.base.data.ResponseUtils.getResponseDataError;
 import static com.codergeezer.core.base.exception.CommonErrorCode.FORBIDDEN;
+import static com.codergeezer.core.base.logging.LoggingUtil.logRequest;
+import static com.codergeezer.core.base.logging.LoggingUtil.logResponse;
 import static com.codergeezer.core.base.utils.JsonUtils.toJson;
-import static com.codergeezer.core.logging.LoggingUtil.logRequest;
-import static com.codergeezer.core.logging.LoggingUtil.logResponse;
 
 /**
  * @author haidv

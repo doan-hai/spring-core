@@ -23,6 +23,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -224,7 +225,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @SuppressWarnings("unchecked")
     @ExceptionHandler(DataIntegrityViolationException.class)
     protected ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        LOGGER.error(ex.getMessage());
+        LOGGER.error(ex.getMessage(), ex);
         return this.handleError(DATA_INTEGRITY_VIOLATION);
     }
 
@@ -285,6 +286,19 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             }
         }
         return error(code, message, subErrors, httpStatus);
+    }
+
+    /**
+     * Handles HttpClientErrorException
+     *
+     * @param ex the exception
+     * @return a {@code ResponseEntity} instance
+     */
+    @SuppressWarnings("unchecked")
+    @ExceptionHandler(HttpClientErrorException.class)
+    protected ResponseEntity<Object> handleHttpClientErrorException(HttpClientErrorException ex) {
+        LOGGER.error(ex.getMessage(), ex);
+        return this.handleError(EXECUTE_THIRTY_SERVICE_ERROR);
     }
 
     /**

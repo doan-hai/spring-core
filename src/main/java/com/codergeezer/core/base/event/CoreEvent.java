@@ -8,7 +8,7 @@ public interface CoreEvent {
 
     String getEventName();
 
-    String getHandleEventClassName();
+    String getHandleEventBeanName();
 
     String getHandleEventFunctionName();
 }

@@ -2,9 +2,12 @@ package com.codergeezer.core.base.event;
 
 import com.codergeezer.core.base.constant.RequestConstant;
 import com.codergeezer.core.base.exception.BaseException;
+import java.util.Arrays;
 import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.task.TaskExecutor;
 
@@ -19,9 +22,15 @@ public abstract class DrivenEventListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DrivenEventListener.class);
 
-    protected abstract String className();
+    private final ApplicationContext applicationContext;
 
-    protected abstract TaskExecutor handleEventExecutor();
+    private final TaskExecutor executor;
+
+    protected DrivenEventListener(ApplicationContext applicationContext,
+        TaskExecutor executor) {
+        this.applicationContext = applicationContext;
+        this.executor = executor;
+    }
 
     protected abstract void processHandleErrorEventAsync(EventInfo eventInfo);
 
@@ -30,7 +39,7 @@ public abstract class DrivenEventListener {
     @EventListener
     public void handleEvent(EventInfo eventInfo) {
         if (!eventInfo.isSync()) {
-            handleEventExecutor().execute(() -> {
+            executor.execute(() -> {
                 ThreadContext.put(RequestConstant.REQUEST_ID, eventInfo.getId());
                 processLogHandleEventAsync(eventInfo);
                 routerEventHandle(eventInfo);
@@ -48,26 +57,21 @@ public abstract class DrivenEventListener {
             return;
         }
         LOGGER.info(String.format("Start handle event: %s id: %s", event.getEventName(), eventInfo.getId()));
-        var handleEventClassName = event.getHandleEventClassName();
+        var handleEventClassName = event.getHandleEventBeanName();
         var handleEventFunctionName = event.getHandleEventFunctionName();
         try {
-            Method m;
-            Object obj;
-            Class<?> c;
-            if (handleEventClassName != null) {
-                c = Class.forName(handleEventClassName);
+            Object obj = applicationContext.getBean(handleEventClassName);
+            var opt =
+                Arrays.stream(obj.getClass().getMethods())
+                    .filter(v -> v.getName().equals(handleEventFunctionName))
+                    .findFirst();
+            if (opt.isPresent()) {
+                invokeHandleMethod(0, eventInfo.getRetry() + 1, opt.get(), obj, eventInfo);
             } else {
-                c = Class.forName(className());
+                LOGGER.warn(String.format("Method %s not found", handleEventFunctionName));
             }
-            m = c.getDeclaredMethod(handleEventFunctionName, Object.class);
-            obj = c.getDeclaredConstructor().newInstance();
-            invokeHandleMethod(0, eventInfo.getRetry() + 1, m, obj, eventInfo);
-        } catch (NoSuchMethodException e) {
-            LOGGER.warn(String.format("Method %s not found", handleEventFunctionName), e);
-        } catch (ClassNotFoundException e) {
-            LOGGER.warn(String.format("Class %s not found", handleEventClassName), e);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            LOGGER.error("init instance false", e);
+        } catch (BeansException e) {
+            LOGGER.warn(String.format("Bean %s not found", handleEventClassName), e);
         }
         LOGGER.info(String.format("End handle event: %s id: %s", event.getEventName(), eventInfo.getId()));
     }
